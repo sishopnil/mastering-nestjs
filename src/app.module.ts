@@ -14,11 +14,23 @@ import { TimeStampMiddleware } from './middleware/time-stamp/time-stamp.middlewa
 import { RequestDetailsMiddleware } from './middleware/request-details/request-details.middleware';
 import { UserService } from './services/user/user.service';
 import { UserLoggingMiddleware } from './middleware/user-logging/user-logging.middleware';
+import { AuthGuard } from './guards/auth/auth.guard';
+import { RoleGuard } from './guards/role/role.guard';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [ProductsModule],
   controllers: [AppController, ProductsController, AuthController],
-  providers: [AppService, ProductsService, UserService],
+  providers: [AppService, ProductsService, UserService, AuthGuard, RoleGuard, 
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RoleGuard,
+    }
+  ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
